@@ -1,0 +1,92 @@
+[
+  {
+    "title": "Electronics",
+    "slug": "electronics",
+    "sub_categories": [
+      {"title": "Mobile Phones", "slug": "mobile-phones"},
+      {"title": "Laptops", "slug": "laptops"},
+      {"title": "Cameras", "slug": "cameras"}
+    ]
+  },
+  {
+    "title": "Books",
+    "slug": "books",
+    "sub_categories": [
+      {"title": "Fiction", "slug": "fiction"},
+      {"title": "Non-Fiction", "slug": "non-fiction"},
+      {"title": "Educational", "slug": "educational"}
+    ]
+  },
+  {
+    "title": "Clothing",
+    "slug": "clothing",
+    "sub_categories": [
+      {"title": "Men", "slug": "men"},
+      {"title": "Women", "slug": "women"},
+      {"title": "Kids", "slug": "kids"}
+    ]
+  },
+  {
+    "title": "Home Appliances",
+    "slug": "home-appliances",
+    "sub_categories": [
+      {"title": "Kitchen", "slug": "kitchen"},
+      {"title": "Laundry", "slug": "laundry"},
+      {"title": "Cleaning", "slug": "cleaning"}
+    ]
+  },
+  {
+    "title": "Sports",
+    "slug": "sports",
+    "sub_categories": [
+      {"title": "Football", "slug": "football"},
+      {"title": "Basketball", "slug": "basketball"},
+      {"title": "Gym Equipment", "slug": "gym-equipment"}
+    ]
+  },
+  {
+    "title": "Beauty",
+    "slug": "beauty",
+    "sub_categories": [
+      {"title": "Skincare", "slug": "skincare"},
+      {"title": "Makeup", "slug": "makeup"},
+      {"title": "Hair Care", "slug": "hair-care"}
+    ]
+  },
+  {
+    "title": "Toys",
+    "slug": "toys",
+    "sub_categories": [
+      {"title": "Action Figures", "slug": "action-figures"},
+      {"title": "Dolls", "slug": "dolls"},
+      {"title": "Board Games", "slug": "board-games"}
+    ]
+  },
+  {
+    "title": "Automotive",
+    "slug": "automotive",
+    "sub_categories": [
+      {"title": "Car Accessories", "slug": "car-accessories"},
+      {"title": "Motorbike Parts", "slug": "motorbike-parts"},
+      {"title": "Tools & Equipment", "slug": "tools-equipment"}
+    ]
+  },
+  {
+    "title": "Music",
+    "slug": "music",
+    "sub_categories": [
+      {"title": "Instruments", "slug": "instruments"},
+      {"title": "Albums", "slug": "albums"},
+      {"title": "Accessories", "slug": "accessories"}
+    ]
+  },
+  {
+    "title": "Groceries",
+    "slug": "groceries",
+    "sub_categories": [
+      {"title": "Fruits & Vegetables", "slug": "fruits-vegetables"},
+      {"title": "Snacks", "slug": "snacks"},
+      {"title": "Beverages", "slug": "beverages"}
+    ]
+  }
+]

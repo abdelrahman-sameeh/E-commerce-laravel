@@ -1,0 +1,7 @@
+<?php
+
+// Import all api routes
+
+require __DIR__ . "/AuthRoute.php";
+require __DIR__ . "/CategoryRoute.php";
+require __DIR__ . "/SubCategoryRoute.php";
