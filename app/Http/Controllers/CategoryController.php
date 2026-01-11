@@ -95,7 +95,7 @@ class CategoryController
 
     $category->delete();
 
-    return response()->json([], 204);
+    return response()->json(null, 204);
   }
 
 

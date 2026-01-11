@@ -19,6 +19,9 @@ class SubCategory extends Model
     static::creating(function ($sub_category) {
       $sub_category->slug = Str::slug($sub_category->title);
     });
+    static::updating(function ($sub_category) {
+      $sub_category->slug = Str::slug($sub_category->title);
+    });
   }
 
   public $timestamps = false;
