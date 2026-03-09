@@ -13,6 +13,7 @@ class SubCategory extends Model
 
   protected $fillable = ['title', 'category_id'];
 
+  public $timestamps = false;
 
   public static function booted()
   {
@@ -24,6 +25,15 @@ class SubCategory extends Model
     });
   }
 
-  public $timestamps = false;
+
+  public function products()
+  {
+    return $this->belongsToMany(Product::class);
+  }
+
+  public function category()
+  {
+    return $this->belongsTo(Category::class);
+  }
 
 }

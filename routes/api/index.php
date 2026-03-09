@@ -5,3 +5,4 @@
 require __DIR__ . "/AuthRoute.php";
 require __DIR__ . "/CategoryRoute.php";
 require __DIR__ . "/SubCategoryRoute.php";
+require __DIR__ . "/ProductRoute.php";

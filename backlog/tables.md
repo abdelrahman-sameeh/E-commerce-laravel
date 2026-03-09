@@ -11,6 +11,21 @@ users
 
 ---
 
+category
+
+- id (pk)
+- title
+
+---
+
+sub_category
+
+- id (pk)
+- category_id (FK category.id)
+- title
+
+---
+
 products
 
 - id (PK)
@@ -31,6 +46,23 @@ product_pictures
 - id (pk)
 - product_id (FK products.id)
 - picture
+
+---
+
+product_sub_category (pivot table)
+
+- id (PK)
+- product_id (FK product.id)
+- sub_category_id (FK sub_category.id)
+
+---
+
+attributes
+
+- id (PK)
+- product_id (FK product.id)
+- key
+- value
 
 ---
 
@@ -57,12 +89,18 @@ addresses
 
 ---
 
+carts
+
+- id (PK)
+- user_id (FK -> users.id)
+
+---
+
 cart_items
 
 - id (PK)
 - cart_id (FK -> carts.id)
 - product_id (FK -> products.id)
-- owner_id (FK -> owners.id)
 - quantity
 - price_at_add_time
 
