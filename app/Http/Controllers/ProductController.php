@@ -2,22 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\Product\StoreProductRequest;
+use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
-use Auth;
-use DB;
+use App\Models\ProductPicture;
+use Auth, DB, Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Str;
 
 
 class ProductController
 {
 
   /** @var \App\Models\User $user */
-
-
   function create(StoreProductRequest $request)
   {
     $user = Auth::user();
@@ -89,20 +87,24 @@ class ProductController
 
   }
 
-
   function delete_one(int $id)
   {
     $user = Auth::user();
-    $product = $user->products()->find($id);
+    $product = Product::find($id);
     if (!$product) {
       return response()->json([
-        "message" => "product not found"
+        "message" => "Product not found"
       ], 404);
+    }
+
+    if ($product->owner_id !== $user->id) {
+      return response()->json([
+        "message" => "You do not have permission to access this product"
+      ], 403); // forbidden
     }
     $product->delete();
     return response()->json(null, 204);
   }
-
 
   function find_one(int $id)
   {
@@ -119,7 +121,6 @@ class ProductController
       new ProductResource($product->load('attributes', 'sub_categories', 'pictures')),
     );
   }
-
 
   function find(Request $request)
   {
@@ -167,8 +168,108 @@ class ProductController
     ]);
   }
 
+  function update(UpdateProductRequest $request, $id)
+  {
+    $user = Auth::user();
+    $product = $user->products()->find($id);
+    if (!$product) {
+      return response()->json([
+        "message" => "product not found"
+      ], 404);
+    }
+    $data = $request->validated();
 
-  
+    if ($request->file('cover_image')) {
+      // delete last cover image
+      $path = str_replace('/storage/', '', $product->cover_image);
+
+      if (Storage::disk('public')->exists($path)) {
+        Storage::disk('public')->delete($path);
+      }
+
+      $newCoverPath = $request->file('cover_image')->store('products/covers', 'public');
+      $data['cover_image'] = Storage::url($newCoverPath);
+    }
+    $product->update($data);
+    return $product;
+  }
+
+  function add_product_pictures(Request $request, $id)
+  {
+
+    $product = Auth::user()->products()->find($id);
+    if (!$product) {
+      return response()->json([
+        "message" => "product not found"
+      ], 404);
+    }
+
+    $request->validate([
+      "product_pictures" => "nullable|array",
+      "product_pictures.*" => "image|mimes:jpg,jpeg,png,webp|max:2048",
+    ]);
+
+    if ($request->hasFile('product_pictures')) {
+      $product_pictures = [];
+      foreach ($request->file('product_pictures') as $file) {
+        $path = $file->store('products/gallery', 'public');
+        $product_pictures[] = ['picture' => $path];
+      }
+      $product->pictures()->createMany($product_pictures);
+    }
+
+    return response()->json([
+      "data" => $product->pictures()->get()
+    ], 201);
+  }
+
+  // Delete Single product picture
+  function delete_product_picture($id)
+  {
+    $picture_row = ProductPicture::with('product')->find($id);
+    if (!$picture_row) {
+      return response()->json(['message' => 'Product picture not found'], 404);
+    }
+
+    if (Auth::id() !== $picture_row->product->owner_id) {
+      return response()->json([
+        "message" => "You don't have access for this action",
+        'status' => "forbidden"
+      ], 403);
+    }
+
+    // delete file
+    $path = str_replace('/storage/', '', $picture_row->picture);
+    if (Storage::disk('public')->exists($path)) {
+      Storage::disk('public')->delete($path);
+    }
+    $picture_row->delete();
+    return response()->noContent();
+  }
+
+  // Delete Multiple product picture
+  function delete_product_pictures(Request $request)
+  {
+
+    $validated = $request->validate([
+      "ids" => "required|array",
+      "ids.*" => "integer"
+    ]);
+
+    $product_pictures = ProductPicture::with('product')->findMany($validated);
+
+    foreach ($product_pictures as $pic) {
+      if ($pic->product->owner_id === Auth::id()) {
+        $path = str_replace('/storage/', '', $pic->picture);
+        if (Storage::disk('public')->exists($path)) {
+          Storage::disk('public')->delete($path);
+        }
+        $pic->delete();
+      }
+    }
+    return response()->noContent();
+  }
+
 
 
 }

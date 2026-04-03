@@ -1,7 +1,6 @@
 * Tasks
 
-- List with pagination, Update Products
+- Update Products
 - coupon (create, update, delete, get)
 - user addresses
 - cart
-- 
