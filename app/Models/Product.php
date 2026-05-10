@@ -7,6 +7,29 @@ use Illuminate\Support\Facades\Storage;
 use Str;
 
 
+/**
+ * @property int $id
+ * @property string $title
+ * @property string $slug
+ * @property string $description
+ * @property string|null $cover_image
+ * @property string $price
+ * @property int $quantity
+ * @property int $owner_id
+ * @property int $is_active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int $sold_count
+ * @property string $rating_avg
+ * @property int $rating_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ProductAttribute> $attributes
+ * @property-read int|null $attributes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ProductPicture> $pictures
+ * @property-read int|null $pictures_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SubCategory> $sub_categories
+ * @property-read int|null $sub_categories_count
+
+ */
 class Product extends Model
 {
 

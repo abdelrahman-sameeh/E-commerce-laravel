@@ -6,6 +6,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Str;
 
+/**
+ * @property int $id
+ * @property string $title
+ * @property string $slug
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SubCategory> $sub_categories
+ * @property-read int|null $sub_categories_count
+ */
 class Category extends Model
 {
   protected $table = 'categories';

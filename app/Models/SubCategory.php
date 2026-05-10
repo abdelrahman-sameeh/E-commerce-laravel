@@ -7,6 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 use Str;
 
 
+/**
+ * @property int $id
+ * @property string $title
+ * @property string $slug
+ * @property int $category_id
+ * @property-read \App\Models\Category $category
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Product> $products
+ * @property-read int|null $products_count
+ */
 class SubCategory extends Model
 {
   protected $table = 'sub_category';

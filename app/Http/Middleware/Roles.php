@@ -26,7 +26,6 @@ class Roles
             return response()->json(['message' => 'Unauthenticated'], 401);
         }
 
-
         foreach ($selected_roles as $role) {
             if (!in_array(strtolower($role), self::$allowed_roles)) {
                 return response()->json([

@@ -1,4 +1,4 @@
-users
+users (DONE)
 
 - id (PK)
 - first_name
@@ -11,14 +11,14 @@ users
 
 ---
 
-category
+category (DONE)
 
 - id (pk)
 - title
 
 ---
 
-sub_category
+sub_category (DONE)
 
 - id (pk)
 - category_id (FK category.id)
@@ -26,7 +26,7 @@ sub_category
 
 ---
 
-products
+products (DONE)
 
 - id (PK)
 - title
@@ -41,7 +41,7 @@ products
 
 ---
 
-product_pictures
+product_pictures (DONE)
 
 - id (pk)
 - product_id (FK products.id)
@@ -49,7 +49,7 @@ product_pictures
 
 ---
 
-product_sub_category (pivot table)
+product_sub_category (pivot table) (Done)
 
 - id (PK)
 - product_id (FK product.id)
@@ -57,7 +57,7 @@ product_sub_category (pivot table)
 
 ---
 
-attributes
+attributes (DONE)
 
 - id (PK)
 - product_id (FK product.id)
@@ -152,3 +152,13 @@ order_item_pictures
 - id (PK)
 - order_item_id (FK -> order_items.id)
 - picture
+
+---
+
+review
+
+- id (PK)
+- product_id (FK -> product.id)
+- author_id (FK -> user.id)
+- content
+- rate
