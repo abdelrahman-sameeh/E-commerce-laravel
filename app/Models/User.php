@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * @property int $id
@@ -29,6 +30,16 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read int|null $products_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
  * @property-read int|null $tokens_count
+ * 
+ *  @property-read Collection<int, Product> $products
+ * @property-read int|null $products_count
+ *
+ * @property-read Collection<int, Coupon> $coupons
+ * @property-read int|null $coupons_count
+ *
+ * @property-read Collection<int, Address> $addresses
+ * @property-read int|null $addresses_count
+ * 
  */
 class User extends Authenticatable
 {
@@ -81,6 +92,11 @@ class User extends Authenticatable
             $query->whereRaw('1 = 0');
         }
         return $query;
+    }
+
+    public function addresses()
+    {
+        return $this->hasMany(Address::class, "user_id");
     }
 
 }

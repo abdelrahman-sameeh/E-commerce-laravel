@@ -83,9 +83,13 @@ addresses
 
 - id (PK)
 - user_id (FK -> users.id)
+- country
 - city
 - street
-- country
+- is_default
+- note
+- latitude
+- longitude
 
 ---
 
