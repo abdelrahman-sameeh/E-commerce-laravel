@@ -18,7 +18,7 @@ class CouponController
         'max:50',
         'alpha_dash',
         Rule::unique(Coupon::class, 'code')->where(function ($query) {
-          $query->where("owner_id", Auth::id());
+          $query->where("seller_id", Auth::id());
         })
       ],
       "percentage" => [
@@ -43,19 +43,19 @@ class CouponController
       ],
     ]);
 
-    $validated['owner_id'] = Auth::id();
+    $validated['seller_id'] = Auth::id();
     $coupon = Coupon::create($validated);
     return $coupon;
   }
 
   function find(Request $request)
   {
-    return Coupon::where(["owner_id" => Auth::id()])->get();
+    return Coupon::where(["seller_id" => Auth::id()])->get();
   }
 
   function update(Request $request, Coupon $coupon)
   {
-    abort_if($coupon->owner_id != Auth::id(), 403, "You are not allowed to access this coupon.");
+    abort_if($coupon->seller_id != Auth::id(), 403, "You are not allowed to access this coupon.");
 
     $validated = $request->validate([
       "code" => [
@@ -66,7 +66,7 @@ class CouponController
         'alpha_dash',
         Rule::unique(Coupon::class, 'code')->where(
           fn($query) =>
-          $query->where('owner_id', Auth::id())
+          $query->where('seller_id', Auth::id())
         )->ignore($coupon->id)
       ],
       "percentage" => [
@@ -99,20 +99,20 @@ class CouponController
 
   function find_one(Coupon $coupon)
   {
-    abort_if($coupon->owner_id !== Auth::id(), 403, "You are not allowed to access this coupon.");
+    abort_if($coupon->seller_id !== Auth::id(), 403, "You are not allowed to access this coupon.");
     return $coupon;
   }
 
   function delete_one(Coupon $coupon)
   {
-    abort_if($coupon->owner_id !== Auth::id(), 403, "You are not allowed to access this coupon.");
+    abort_if($coupon->seller_id !== Auth::id(), 403, "You are not allowed to access this coupon.");
     $coupon->delete();
     return "coupon deleted successfully";
   }
 
   function delete_all()
   {
-    Coupon::where(["owner_id" => Auth::id()])->delete();
+    Coupon::where(["seller_id" => Auth::id()])->delete();
     return "coupons deleted successfully";
   }
 

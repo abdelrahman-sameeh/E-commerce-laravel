@@ -7,7 +7,7 @@ users (DONE)
 - password
 - created_at
 - phone
-- role => "admin", "owner", "user", "delivery"
+- role => "admin", "seller", "user", "delivery"
 
 ---
 
@@ -35,7 +35,7 @@ products (DONE)
 - cover_image
 - price
 - quantity
-- owner_id (FK -> user.id)
+- seller_id (FK -> user.id)
 - is_active
 - created_at
 
@@ -74,7 +74,7 @@ coupons
 - expire_date
 - max_usage
 - used_count
-- owner_id (FK -> user.id)
+- seller_id (FK -> user.id)
 - is_active
 
 ---
@@ -110,7 +110,7 @@ cart_coupons
 
 - id (PK)
 - cart_id (FK -> carts.id)
-- owner_id (FK -> users.id)
+- seller_id (FK -> users.id)
 - coupon_id (FK -> coupons.id)
 
 ---
@@ -119,7 +119,7 @@ orders
 
 - id (PK)
 - user_id (FK -> users.id)
-- owner_id (FK -> owners.id)
+- seller_id (FK -> users.id)
 - subtotal
 - discount
 - total_price

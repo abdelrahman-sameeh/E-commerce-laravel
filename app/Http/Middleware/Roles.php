@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class Roles
 {
-    private static $allowed_roles = ['admin', 'user', 'owner', 'delivery'];
+    private static $allowed_roles = ['admin', 'user', 'seller', 'delivery'];
 
     /**
      * Handle an incoming request.

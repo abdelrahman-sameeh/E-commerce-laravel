@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->string('cover_image');
             $table->decimal('price', 10, 2);
             $table->integer('quantity')->unsigned();
-            $table->foreignId('owner_id')->constrained("users")->cascadeOnDelete();
+            $table->foreignId('seller_id')->constrained("users")->cascadeOnDelete();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

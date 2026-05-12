@@ -20,7 +20,7 @@ class AuthController extends BaseController
     $role = match (strtolower($validated['role'] ?? "user")) {
       "admin" => UserRole::ADMIN,
       "delivery" => UserRole::DELIVERY,
-      "owner" => UserRole::OWNER,
+      "seller" => UserRole::SELLER,
       default => UserRole::USER,
     };
 

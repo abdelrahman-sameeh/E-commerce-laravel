@@ -17,9 +17,9 @@ return new class extends Migration {
             $table->date("expire_date");
             $table->integer("max_usage");
             $table->integer("used_count")->default(0);
-            $table->foreignId('owner_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('seller_id')->constrained('users')->cascadeOnDelete();
             $table->boolean('is_active')->default(true);
-            $table->unique(['code', 'owner_id']);
+            $table->unique(['code', 'seller_id']);
             $table->timestamps();
         });
     }

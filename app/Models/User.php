@@ -71,13 +71,13 @@ class User extends Authenticatable
 
     public function products()
     {
-        return $this->hasMany(Product::class, 'owner_id');
+        return $this->hasMany(Product::class, 'seller_id');
     }
 
     public function coupons()
     {
-        $query = $this->hasMany(Coupon::class, 'owner_id');
-        if($this->role != UserRole::OWNER){
+        $query = $this->hasMany(Coupon::class, 'seller_id');
+        if ($this->role != UserRole::SELLER) {
             $query->whereRaw('1 = 0');
         }
         return $query;

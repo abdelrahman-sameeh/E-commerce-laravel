@@ -15,7 +15,7 @@ use Str;
  * @property string|null $cover_image
  * @property string $price
  * @property int $quantity
- * @property int $owner_id
+ * @property int $seller_id
  * @property int $is_active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -40,7 +40,7 @@ class Product extends Model
     'description',
     'price',
     'quantity',
-    'owner_id',
+    'seller_id',
     'cover_image',
     'is_active'
   ];

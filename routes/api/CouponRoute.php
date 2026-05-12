@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::middleware(['auth:sanctum', "roles:owner"])->group(function() {
+Route::middleware(['auth:sanctum', "roles:seller"])->group(function () {
   Route::post("coupons", [CouponController::class, 'create']);
   Route::get("coupons", [CouponController::class, 'find']);
   Route::put("coupons/{id}", [CouponController::class, 'update']);

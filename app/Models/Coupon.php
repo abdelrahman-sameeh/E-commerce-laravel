@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $expire_date
  * @property int $max_usage
  * @property int $used_count
- * @property int $owner_id
+ * @property int $seller_id
  * @property int $is_active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Coupon whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Coupon whereIsActive($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Coupon whereMaxUsage($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Coupon whereOwnerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Coupon whereSellerId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Coupon wherePercentage($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Coupon whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Coupon whereUsedCount($value)
@@ -40,7 +40,7 @@ class Coupon extends Model
     'expire_date',
     'max_usage',
     'used_count',
-    'owner_id',
+    'seller_id',
     'is_active',
   ];
 

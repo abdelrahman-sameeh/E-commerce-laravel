@@ -18,7 +18,7 @@ class ProductController
   /** @var \App\Models\User $user */
   function create(StoreProductRequest $request)
   {
-    $user = Auth::user();
+    $user = $request->user();
 
     // check if product already exists
     $exist_product = $user->products()->whereSlug(Str::slug($request->title))->first();
@@ -97,7 +97,7 @@ class ProductController
       ], 404);
     }
 
-    if ($product->owner_id !== $user->id) {
+    if ($product->seller_id !== $user->id) {
       return response()->json([
         "message" => "You do not have permission to access this product"
       ], 403); // forbidden
@@ -106,9 +106,9 @@ class ProductController
     return response()->json(null, 204);
   }
 
-  function find_one(int $id)
+  function find_one(Request $request, int $id)
   {
-    $user = Auth::user();
+    $user = $request->user();
     $product = $user->products()->find($id);
 
     if (!$product) {
@@ -170,7 +170,7 @@ class ProductController
 
   function update(UpdateProductRequest $request, $id)
   {
-    $user = Auth::user();
+    $user = $request->user();
     $product = $user->products()->find($id);
     if (!$product) {
       return response()->json([
@@ -197,7 +197,7 @@ class ProductController
   function add_product_pictures(Request $request, $id)
   {
 
-    $product = Auth::user()->products()->find($id);
+    $product = $request->user()->products()->find($id);
     if (!$product) {
       return response()->json([
         "message" => "product not found"
@@ -231,7 +231,7 @@ class ProductController
       return response()->json(['message' => 'Product picture not found'], 404);
     }
 
-    if (Auth::id() !== $picture_row->product->owner_id) {
+    if (Auth::id() !== $picture_row->product->seller_id) {
       return response()->json([
         "message" => "You don't have access for this action",
         'status' => "forbidden"
@@ -259,7 +259,7 @@ class ProductController
     $product_pictures = ProductPicture::with('product')->findMany($validated);
 
     foreach ($product_pictures as $pic) {
-      if ($pic->product->owner_id === Auth::id()) {
+      if ($pic->product->seller_id === Auth::id()) {
         $path = str_replace('/storage/', '', $pic->picture);
         if (Storage::disk('public')->exists($path)) {
           Storage::disk('public')->delete($path);

@@ -3,7 +3,7 @@
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
-Route::group(["middleware" => ["auth:sanctum", "roles:owner"]], function () {
+Route::group(["middleware" => ["auth:sanctum", "roles:seller"]], function () {
   Route::post('products', [ProductController::class, 'create']);
   Route::delete('products/{id}', [ProductController::class, 'delete_one']);
   Route::get('products/{id}', [ProductController::class, 'find_one']);

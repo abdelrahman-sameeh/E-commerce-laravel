@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::table('products', function (Blueprint $table) {
             $table->dropUnique('products_slug_unique');
             $table->string('slug')->change();
-            $table->unique(['owner_id', 'slug']);
+            $table->unique(['seller_id', 'slug']);
         });
     }
 
@@ -24,7 +24,7 @@ return new class extends Migration {
     {
         Schema::table('products', function (Blueprint $table) {
             $table->string('slug')->unique()->change();
-            $table->dropUnique(['owner_id', 'slug']);
+            $table->dropUnique(['seller_id', 'slug']);
         });
     }
 };
