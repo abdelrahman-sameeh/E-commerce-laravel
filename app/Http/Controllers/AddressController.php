@@ -13,7 +13,7 @@ use Illuminate\Validation\Rule;
 class AddressController
 {
 
-  function create(Request $request)
+  function store(Request $request)
   {
     $countries = Countries::LIST;
     $countryKeys = array_keys($countries);
@@ -49,22 +49,19 @@ class AddressController
   }
 
 
-  function list(Request $request)
+  function index(Request $request)
   {
     return $request->user()->addresses()->get();
   }
 
 
-
-  function find_one(Request $request, Address $address)
+  function show(Request $request, Address $address)
   {
     abort_if($request->user()->id != $address->user_id, 403, "You are not allowed to access this address.");
     return $address;
   }
 
-
-
-  function update_one(Request $request, Address $address)
+  function update(Request $request, Address $address)
   {
     abort_if($request->user()->id != $address->user_id, 403, "You are not allowed to access this address.");
     $countries = Countries::LIST;
@@ -93,7 +90,7 @@ class AddressController
 
 
 
-  function delete_one(Request $request, Address $address)
+  function destroy(Request $request, Address $address)
   {
     abort_if($request->user()->id != $address->user_id, 403, "You are not allowed to access this address.");
     if ($address->is_default) {
