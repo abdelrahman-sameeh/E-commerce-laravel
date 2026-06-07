@@ -22,12 +22,20 @@ class ProductPicture extends Model
 
   public $timestamps = false;
 
+  protected $appends = ['picture_url'];
+
   protected $fillable = [
     'product_id',
     'picture',
   ];
 
-  public function product() {
+  public function getPictureUrlAttribute()
+  {
+    return url($this->picture);
+  }
+
+  public function product()
+  {
     return $this->belongsTo(Product::class);
   }
 

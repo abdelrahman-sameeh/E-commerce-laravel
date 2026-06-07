@@ -106,7 +106,6 @@ cart_items
 - cart_id (FK -> carts.id)
 - product_id (FK -> products.id)
 - quantity
-- price_at_add_time
 
 ---
 

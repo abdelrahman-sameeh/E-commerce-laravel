@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -44,5 +46,9 @@ class Coupon extends Model
     'is_active',
   ];
 
+  public function is_invalid()
+  {
+    return Carbon::parse($this->expire_date)->lte(Carbon::now()) || !$this->is_active || $this->used_count >= $this->max_usage;
+  }
 
 }

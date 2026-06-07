@@ -76,8 +76,6 @@ class ProductController
       return $product;
     });
 
-
-
     return response()->json([
       "message" => "product created successfully",
       "data" => new ProductResource(

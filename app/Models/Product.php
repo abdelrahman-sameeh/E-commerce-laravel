@@ -35,6 +35,8 @@ class Product extends Model
 
   public $table = 'products';
 
+  protected $appends = ['cover_image_url'];
+
   protected $fillable = [
     'title',
     'description',
@@ -44,6 +46,12 @@ class Product extends Model
     'cover_image',
     'is_active'
   ];
+
+
+  public function getCoverImageUrlAttribute()
+  {
+    return url($this->cover_image);
+  }
 
 
   public static function booted()
@@ -56,12 +64,12 @@ class Product extends Model
       $product->slug = Str::slug($product->title);
     });
 
-    static::deleting(function($product){
-      if($product->cover_image){
+    static::deleting(function ($product) {
+      if ($product->cover_image) {
         $path = str_replace('/storage/', '', $product->cover_image);
         Storage::disk('public')->delete($path);
       }
-      foreach($product->pictures as $pic){
+      foreach ($product->pictures as $pic) {
         $path = str_replace('/storage/', '', $pic->picture);
         Storage::disk('public')->delete($path);
       }

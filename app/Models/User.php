@@ -4,11 +4,14 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Constants\UserRole;
+use App\Models\Cart\Cart;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Collection;
+use App\Models\Address;
+use App\Models\Coupon;
 
 /**
  * @property int $id
@@ -98,5 +101,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Address::class, "user_id");
     }
+
+    public function cart()
+    {
+        return $this->hasOne(Cart::class);
+    }
+
 
 }
