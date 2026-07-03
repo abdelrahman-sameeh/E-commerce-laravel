@@ -1,60 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-
-
-// [
-//             {
-//                 "id": 2,
-//                 "cart_id": 1,
-//                 "product_id": 2,
-//                 "quantity": 3,
-//                 "updated_at": "2026-06-06T18:27:31.000000Z",
-//                 "product": {
-//                     "id": 2,
-//                     "title": "Iphone x",
-//                     "slug": "iphone-x",
-//                     "cover_image": "/storage/products/covers/hqTEBcGmyK5hP7R4PtQToZ1qEDqbEi4lEVjI5HiM.webp",
-//                     "price": "20000.00",
-//                     "sold_count": 0,
-//                     "seller_id": 1,
-//                     "cover_image_url": "http://localhost:8000/storage/products/covers/hqTEBcGmyK5hP7R4PtQToZ1qEDqbEi4lEVjI5HiM.webp",
-//                     "pictures": []
-//                 }
-//             },
-//             {
-//                 "id": 1,
-//                 "cart_id": 1,
-//                 "product_id": 1,
-//                 "quantity": 2,
-//                 "updated_at": "2026-06-06T18:17:30.000000Z",
-//                 "product": {
-//                     "id": 1,
-//                     "title": "addidas shirt",
-//                     "slug": "addidas-shirt",
-//                     "cover_image": "/storage/products/covers/7Dx3GzIbDFGfnabqpBpzhJkyRCgBPy69ICfX835J.webp",
-//                     "price": "1500.00",
-//                     "sold_count": 0,
-//                     "seller_id": 1,
-//                     "cover_image_url": "http://localhost:8000/storage/products/covers/7Dx3GzIbDFGfnabqpBpzhJkyRCgBPy69ICfX835J.webp",
-//                     "pictures": [
-//                         {
-//                             "id": 1,
-//                             "product_id": 1,
-//                             "picture": "/storage/products/gallery/U8nNE05WagOePq1D0S0xBwDKiR4VMRqL3blk95nR.webp",
-//                             "picture_url": "http://localhost:8000/storage/products/gallery/U8nNE05WagOePq1D0S0xBwDKiR4VMRqL3blk95nR.webp"
-//                         }
-//                     ]
-//                 }
-//             }
-//         ]
-
 use App\Models\Cart\CartCoupon;
 use App\Models\Coupon;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
-use Illuminate\Notifications\Action;
 
 class CartController extends Controller
 {
