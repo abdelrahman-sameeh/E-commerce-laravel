@@ -2,13 +2,84 @@
 
 namespace App\Http\Controllers;
 
+
+// [
+//             {
+//                 "id": 2,
+//                 "cart_id": 1,
+//                 "product_id": 2,
+//                 "quantity": 3,
+//                 "updated_at": "2026-06-06T18:27:31.000000Z",
+//                 "product": {
+//                     "id": 2,
+//                     "title": "Iphone x",
+//                     "slug": "iphone-x",
+//                     "cover_image": "/storage/products/covers/hqTEBcGmyK5hP7R4PtQToZ1qEDqbEi4lEVjI5HiM.webp",
+//                     "price": "20000.00",
+//                     "sold_count": 0,
+//                     "seller_id": 1,
+//                     "cover_image_url": "http://localhost:8000/storage/products/covers/hqTEBcGmyK5hP7R4PtQToZ1qEDqbEi4lEVjI5HiM.webp",
+//                     "pictures": []
+//                 }
+//             },
+//             {
+//                 "id": 1,
+//                 "cart_id": 1,
+//                 "product_id": 1,
+//                 "quantity": 2,
+//                 "updated_at": "2026-06-06T18:17:30.000000Z",
+//                 "product": {
+//                     "id": 1,
+//                     "title": "addidas shirt",
+//                     "slug": "addidas-shirt",
+//                     "cover_image": "/storage/products/covers/7Dx3GzIbDFGfnabqpBpzhJkyRCgBPy69ICfX835J.webp",
+//                     "price": "1500.00",
+//                     "sold_count": 0,
+//                     "seller_id": 1,
+//                     "cover_image_url": "http://localhost:8000/storage/products/covers/7Dx3GzIbDFGfnabqpBpzhJkyRCgBPy69ICfX835J.webp",
+//                     "pictures": [
+//                         {
+//                             "id": 1,
+//                             "product_id": 1,
+//                             "picture": "/storage/products/gallery/U8nNE05WagOePq1D0S0xBwDKiR4VMRqL3blk95nR.webp",
+//                             "picture_url": "http://localhost:8000/storage/products/gallery/U8nNE05WagOePq1D0S0xBwDKiR4VMRqL3blk95nR.webp"
+//                         }
+//                     ]
+//                 }
+//             }
+//         ]
+
 use App\Models\Cart\CartCoupon;
 use App\Models\Coupon;
+use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\Action;
 
 class CartController extends Controller
 {
+
+  private function calculate_group_summary($group)
+  {
+    $subtotal = 0;
+    $discount = 0;
+    foreach ($group['items'] as $item) {
+      $subtotal += $item['quantity'] * $item['product']['price'];
+    }
+
+    $discount = 0;
+    $coupon = $group['coupon'];
+
+    if ($coupon && isset($coupon) && Carbon::parse($coupon['expire_date'])->isFuture()) {
+      $discount = $subtotal * ($coupon['percentage'] / 100);
+    }
+
+    return [
+      "sub_total" => $subtotal,
+      "discount" => $discount,
+      "total" => $subtotal - $discount,
+    ];
+  }
 
   public function index(Request $request)
   {
@@ -18,23 +89,59 @@ class CartController extends Controller
         "message" => "Cart is not exist"
       ]);
     }
+    $groups = [];
+
+    foreach ($cart->items()->get() as $item) {
+      $sellerId = $item->product->seller_id;
+      if (!isset($groups[$sellerId])) {
+        $groups[$sellerId]["seller_id"] = $sellerId;
+        $groups[$sellerId]['items'] = [];
+      }
+      $groups[$sellerId]["items"][] = [
+        'id' => $item->id,
+        'quantity' => $item->quantity,
+        'product' => [
+          'id' => $item->product->id,
+          'title' => $item->product->title,
+          'slug' => $item->product->slug,
+          'price' => $item->product->price,
+          'cover_image' => $item->product->cover_image_url,
+          "stock" => $item->product->quantity
+        ]
+      ];
+    }
+
+    $cartCoupons = $cart->coupons()
+      ->with('coupon:id,code,percentage,expire_date,max_usage,seller_id')
+      ->get();
+
+    foreach ($cartCoupons as $cartCoupon) {
+      $groups[$cartCoupon->coupon->seller_id]["coupon"] = [
+        "percentage" => $cartCoupon->coupon->percentage,
+        "expire_date" => $cartCoupon->coupon->expire_date,
+      ];
+    }
+
+    $cartSubtotal = 0;
+    $cartDiscount = 0;
+
+    foreach ($groups as &$group) {
+      $groupSummary = $this->calculate_group_summary($group);
+      $group['summary'] = $groupSummary;
+      $cartSubtotal += $groupSummary['sub_total'];
+      $cartDiscount += $groupSummary['discount'];
+    }
+
     return response()->json([
       "cart" => [
         "id" => $cart->id,
         "items_count" => $cart->items()->count(),
-        "items" => $cart->items()
-          ->with([
-            'product:id,title,slug,cover_image,price,sold_count',
-            'product.pictures:id,product_id,picture',
-          ])
-          ->select('id', 'cart_id', 'product_id', 'quantity', 'updated_at')
-          ->orderBy('updated_at', 'desc')
-          ->get(),
-
-        "coupons" => $cart->coupons()
-          ->with('coupon:id,code,percentage,expire_date,max_usage')
-          ->select('id', 'cart_id', 'coupon_id')
-          ->get(),
+        "groups" => array_values($groups),
+        "summary_cart" => [
+          "subtotal" => $cartSubtotal,
+          "discount" => $cartDiscount,
+          "total" => $cartSubtotal - $cartDiscount
+        ]
       ],
     ], 201);
   }
@@ -177,11 +284,6 @@ class CartController extends Controller
 
     return response()->noContent();
   }
-
-
-
-
-
 
 
 

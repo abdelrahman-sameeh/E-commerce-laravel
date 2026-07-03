@@ -1,6 +1,6 @@
-* Tasks
+# Tasks
 
-# CartController Functions
+## CartController Functions
 
 - getCartTotals() → حساب الإجمالي (subtotal / discount / total)
 - summary() → ملخص السلة (group by seller + totals)
