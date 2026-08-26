@@ -3,98 +3,28 @@
 namespace App\Http\Controllers;
 use App\Models\Cart\CartCoupon;
 use App\Models\Coupon;
+use App\Models\Product;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
-
-  private function calculate_group_summary($group)
-  {
-    $subtotal = 0;
-    $discount = 0;
-    foreach ($group['items'] as $item) {
-      $subtotal += $item['quantity'] * $item['product']['price'];
-    }
-
-    $discount = 0;
-    $coupon = $group['coupon'];
-
-    if ($coupon && isset($coupon) && Carbon::parse($coupon['expire_date'])->isFuture()) {
-      $discount = $subtotal * ($coupon['percentage'] / 100);
-    }
-
-    return [
-      "sub_total" => $subtotal,
-      "discount" => $discount,
-      "total" => $subtotal - $discount,
-    ];
-  }
-
+  // Public Methods
   public function index(Request $request)
   {
     $cart = $request->user()->cart;
+
     if (!$cart) {
       return response()->json([
         "message" => "Cart is not exist"
       ]);
     }
-    $groups = [];
-
-    foreach ($cart->items()->get() as $item) {
-      $sellerId = $item->product->seller_id;
-      if (!isset($groups[$sellerId])) {
-        $groups[$sellerId]["seller_id"] = $sellerId;
-        $groups[$sellerId]['items'] = [];
-      }
-      $groups[$sellerId]["items"][] = [
-        'id' => $item->id,
-        'quantity' => $item->quantity,
-        'product' => [
-          'id' => $item->product->id,
-          'title' => $item->product->title,
-          'slug' => $item->product->slug,
-          'price' => $item->product->price,
-          'cover_image' => $item->product->cover_image_url,
-          "stock" => $item->product->quantity
-        ]
-      ];
-    }
-
-    $cartCoupons = $cart->coupons()
-      ->with('coupon:id,code,percentage,expire_date,max_usage,seller_id')
-      ->get();
-
-    foreach ($cartCoupons as $cartCoupon) {
-      $groups[$cartCoupon->coupon->seller_id]["coupon"] = [
-        "percentage" => $cartCoupon->coupon->percentage,
-        "expire_date" => $cartCoupon->coupon->expire_date,
-      ];
-    }
-
-    $cartSubtotal = 0;
-    $cartDiscount = 0;
-
-    foreach ($groups as &$group) {
-      $groupSummary = $this->calculate_group_summary($group);
-      $group['summary'] = $groupSummary;
-      $cartSubtotal += $groupSummary['sub_total'];
-      $cartDiscount += $groupSummary['discount'];
-    }
 
     return response()->json([
-      "cart" => [
-        "id" => $cart->id,
-        "items_count" => $cart->items()->count(),
-        "groups" => array_values($groups),
-        "summary_cart" => [
-          "subtotal" => $cartSubtotal,
-          "discount" => $cartDiscount,
-          "total" => $cartSubtotal - $cartDiscount
-        ]
-      ],
-    ], 201);
+      'cart' => $this->getCartData($cart),
+    ]);
+
   }
 
   public function add_items_to_cart(Request $request)
@@ -236,7 +166,177 @@ class CartController extends Controller
     return response()->noContent();
   }
 
+  public function validateCart(Request $request)
+  {
+    $cart = $request->user()->cart;
+    $errors = [];
 
+    foreach ($cart->items as $item) {
+      $product = Product::find($item->product_id);
+      if (!$product) {
+        $errors[] = [
+          'item_id' => $item->id,
+          'product_id' => $item->product_id,
+          'type' => 'product_not_found',
+          'message' => 'Product is no longer available.',
+        ];
+
+        continue;
+      }
+
+      if (!$product->is_active) {
+        $errors[] = [
+          'item_id' => $item->id,
+          'product_id' => $product->id,
+          'type' => 'product_inactive',
+          'message' => 'Product is no longer available.',
+        ];
+      }
+      if ($product->quantity < $item->quantity) {
+        $errors[] = [
+          'item_id' => $item->id,
+          'product_id' => $product->id,
+          'type' => 'insufficient_stock',
+          'message' => "Only {$product->quantity} items are available.",
+          'requested_quantity' => $item->quantity,
+          'available_quantity' => $product->quantity,
+        ];
+      }
+    }
+
+    foreach ($cart->coupons as $cartCoupon) {
+      $coupon = Coupon::find($cartCoupon->coupon_id);
+      if (!$coupon) {
+        $errors[] = [
+          'coupon_id' => $cartCoupon->coupon_id,
+          'type' => 'coupon_not_found',
+          'message' => 'Coupon is no longer available.',
+        ];
+        continue;
+      }
+
+      if (!$coupon->is_active) {
+        $errors[] = [
+          'coupon_id' => $cartCoupon->coupon_id,
+          'type' => 'coupon_inactive',
+          'message' => 'Coupon is no longer active.',
+        ];
+      }
+
+      if ($coupon->max_usage === $coupon->used_count) {
+        $errors[] = [
+          'coupon_id' => $cartCoupon->coupon_id,
+          'type' => 'coupon_usage_limit_reached',
+          'message' => 'This coupon has reached its usage limit.',
+        ];
+      }
+
+      if (Carbon::now()->toDateString() > $coupon->expire_date) {
+        $errors[] = [
+          'coupon_id' => $coupon->id,
+          'type' => 'coupon_expired',
+          'message' => 'Coupon has expired.',
+        ];
+      }
+
+    }
+
+    $errors_count = count($errors);
+    return $errors_count
+      ? [
+        'valid' => false,
+        'errors_count' => $errors_count,
+        'errors' => $errors,
+      ]
+      : [
+        'valid' => true,
+        'errors_count' => 0,
+        'errors' => [],
+        'cart' => $this->getCartData($cart),
+      ];
+
+  }
+
+  // Private Methods
+  private function calculate_group_summary($group)
+  {
+    $subtotal = 0;
+    $discount = 0;
+    foreach ($group['items'] as $item) {
+      $subtotal += $item['quantity'] * $item['product']['price'];
+    }
+
+    $discount = 0;
+    $coupon = $group['coupon'];
+
+    if ($coupon && isset($coupon) && Carbon::parse($coupon['expire_date'])->isFuture()) {
+      $discount = $subtotal * ($coupon['percentage'] / 100);
+    }
+
+    return [
+      "sub_total" => $subtotal,
+      "discount" => $discount,
+      "total" => $subtotal - $discount,
+    ];
+  }
+
+
+  private function getCartData($cart)
+  {
+    $groups = [];
+
+    foreach ($cart->items as $item) {
+      $sellerId = $item->product->seller_id;
+      if (!isset($groups[$sellerId])) {
+        $groups[$sellerId]["seller_id"] = $sellerId;
+        $groups[$sellerId]['items'] = [];
+      }
+      $groups[$sellerId]["items"][] = [
+        'id' => $item->id,
+        'quantity' => $item->quantity,
+        'product' => [
+          'id' => $item->product->id,
+          'title' => $item->product->title,
+          'slug' => $item->product->slug,
+          'price' => $item->product->price,
+          'cover_image' => $item->product->cover_image_url,
+          "stock" => $item->product->quantity
+        ]
+      ];
+    }
+
+    $cartCoupons = $cart->coupons()
+      ->with('coupon:id,code,percentage,expire_date,max_usage,seller_id')
+      ->get();
+
+    foreach ($cartCoupons as $cartCoupon) {
+      $groups[$cartCoupon->coupon->seller_id]["coupon"] = [
+        "percentage" => $cartCoupon->coupon->percentage,
+        "expire_date" => $cartCoupon->coupon->expire_date,
+      ];
+    }
+
+    $cartSubtotal = 0;
+    $cartDiscount = 0;
+
+    foreach ($groups as &$group) {
+      $groupSummary = $this->calculate_group_summary($group);
+      $group['summary'] = $groupSummary;
+      $cartSubtotal += $groupSummary['sub_total'];
+      $cartDiscount += $groupSummary['discount'];
+    }
+
+    return [
+      "id" => $cart->id,
+      "items_count" => $cart->items()->count(),
+      "groups" => array_values($groups),
+      "summary_cart" => [
+        "subtotal" => $cartSubtotal,
+        "discount" => $cartDiscount,
+        "total" => $cartSubtotal - $cartDiscount
+      ]
+    ];
+  }
 
 
 }

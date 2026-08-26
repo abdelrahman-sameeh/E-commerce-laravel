@@ -14,6 +14,7 @@ Route::middleware(['auth:sanctum', 'roles:user'])->group(function () {
   Route::delete('cart', [CartController::class, 'delete_cart']);
   Route::post('cart/coupon', [CartController::class, 'apply_coupon']);
   Route::delete('cart/coupon', [CartController::class, 'remove_coupon']);
+  Route::post('cart/validate', [CartController::class, 'validateCart']);
 
 });
 
