@@ -9,3 +9,4 @@ require __DIR__ . "/ProductRoute.php";
 require __DIR__ . "/CouponRoute.php";
 require __DIR__ . "/AddressRoute.php";
 require __DIR__ . "/CartRoute.php";
+require __DIR__ . "/OrderRoute.php";

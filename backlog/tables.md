@@ -122,16 +122,27 @@ orders
 
 - id (PK)
 - user_id (FK -> users.id)
-- seller_id (FK -> users.id)
 - subtotal
 - discount
 - total_price
-- coupon_id (FK -> coupons.id, NULL)
 - phone
 - address_id (FK -> addresses.id)
 - status
 - payment_status
+- payment_method
 - created_at
+
+---
+
+sub_orders
+
+- id (PK)
+- order_id (FK orders.id)
+- seller_id (FK users.id)
+- subtotal
+- discount
+- total
+- status
 
 ---
 
