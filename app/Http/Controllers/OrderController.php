@@ -36,7 +36,7 @@ class OrderController extends Controller
     {
         abort_if($order->user_id !== $request->user()->id, 403, 'Forbidden.');
 
-        $order->load(['address', 'subOrders.seller:id,first_name,last_name', 'subOrders.items.pictures']);
+        $order->load(['address', 'subOrders.seller:id,first_name,last_name,email', 'subOrders.items.pictures']);
 
         return response()->json(['order' => $order]);
     }

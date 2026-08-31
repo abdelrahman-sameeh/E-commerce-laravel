@@ -30,6 +30,7 @@ class AuthController extends BaseController
       "email" => $validated["email"],
       "password" => Hash::make($validated["password"]),
       "role" => $role,
+      "password_confirmation" => Hash::make($validated["password"])
     ]);
 
     return response()->json([
