@@ -1,0 +1,50 @@
+services:
+    app:
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
+        container_name: e_commerce_app
+        ports:
+            - "8000:8000"
+        volumes:
+            - .:/var/www/html
+        environment:
+            - DB_CONNECTION=mysql
+            - DB_HOST=db
+            - DB_PORT=3306
+            - DB_DATABASE=e_commerce_db
+            - DB_USERNAME=root
+            - DB_PASSWORD=
+        depends_on:
+            db:
+                condition: service_health
+        networks:
+            - laravel_networks
+
+    db:
+        images: mysql:8.0
+        container_name: e_commerce_db
+        restart: unless_stopped
+        environment:
+            MYSQL_DATABASE: laravel
+            MYSQL_USER: root
+            MYSQL_PASSWORD:
+            MYSQL_ROOT_PASSWORD:
+        ports:
+            - "3306:3306"
+        volumes:
+            - db_data:/var/lib/mysql
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+        networks:
+            - laravel_network
+        
+volumes:
+    db_data:
+
+networks:
+    laravel_network:
+        driver: bridge
