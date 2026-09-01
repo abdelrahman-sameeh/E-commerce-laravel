@@ -8,14 +8,7 @@ services:
             - "8000:8000"
         volumes:
             - .:/var/www/html
-            - /var/www/html/vendor 
-        environment:
-            - DB_CONNECTION=mysql
-            - DB_HOST=db
-            - DB_PORT=3306
-            - DB_DATABASE=e_commerce_db
-            - DB_USERNAME=root
-            - DB_PASSWORD=secret
+            - /var/www/html/vendor
         depends_on:
             db:
                 condition: service_healthy
