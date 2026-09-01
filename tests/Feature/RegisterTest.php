@@ -2,10 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Constants\UserRole;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class RegisterTest extends TestCase
@@ -55,6 +53,15 @@ class RegisterTest extends TestCase
         $response = $this->postJson($this->baseUrl, $data);
         $response->assertStatus(422)
             ->assertJsonStructure(['errors' => ['password']]);
+
+    }
+
+    function testPasswordIsHashed(){
+        $response = $this->postJson($this->baseUrl, $this->data);
+        $user = User::find($response['user']['id']);
+        $response->assertStatus(201);
+        // $this->assertTrue(Hash::check($this->data['password'], $user->password));
+        $this->assertTrue(password_verify($this->data['password'], $user->password));
 
     }
 
