@@ -22,3 +22,4 @@ DB_PORT=3306
 DB_DATABASE=e_commerce_db
 DB_USERNAME=e_commerce_user
 DB_PASSWORD=secret
+DB_ROOT_PASSWORD=secret
