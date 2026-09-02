@@ -8,30 +8,24 @@ services:
             - "8000:8000"
         volumes:
             - .:/var/www/html
-        environment:
-            - DB_CONNECTION=mysql
-            - DB_HOST=db
-            - DB_PORT=3306
-            - DB_DATABASE=e_commerce_db
-            - DB_USERNAME=root
-            - DB_PASSWORD=
+            - /var/www/html/vendor
         depends_on:
             db:
-                condition: service_health
+                condition: service_healthy
         networks:
-            - laravel_networks
+            - laravel_network
 
     db:
-        images: mysql:8.0
+        image: mysql:8.0
         container_name: e_commerce_db
-        restart: unless_stopped
+        restart: unless-stopped
         environment:
-            MYSQL_DATABASE: laravel
-            MYSQL_USER: root
-            MYSQL_PASSWORD:
-            MYSQL_ROOT_PASSWORD:
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_USER: ${DB_USERNAME}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
         ports:
-            - "3306:3306"
+            - "3307:3306"
         volumes:
             - db_data:/var/lib/mysql
         healthcheck:
